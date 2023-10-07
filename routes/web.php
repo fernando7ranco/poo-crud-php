@@ -8,7 +8,14 @@ $router->get('teste', function () {
 	return 'teste';
 });
 
+$router->get('home', 'ControllerImovelView@home')->name('homepage');
+$router->get('home', 'ControllerImovelView@home')->name('homepage');
+
+
 $router->group('imovel', function ($route) {
+	$route->get('/new', 'ControllerImovelView@new')->name('newimovel');
+	$route->get('/edit/{id}:(\d+)', 'ControllerImovelView@edit')->name('editimovel');
+
 	$route->post('/casa', 'ControllerImovel@createCasa')->name('createcasa');
 	$route->post('/apartamento', 'ControllerImovel@createApartamento')->name('createapartamento');
 	$route->post('/terreno', 'ControllerImovel@createTerreno')->name('createterreno');

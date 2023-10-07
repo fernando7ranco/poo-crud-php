@@ -2,10 +2,14 @@
 
 if (!function_exists('view')) {
 
-	function view($file)
+	function view(string $file, array $data = [])
 	{
+		if (!empty($data)) {
+			extract($data);
+		}
+
 		ob_start();
-		require dirname(__DIR__) . "/view/{$file}.php";
+		require __APP_ROOT__ . "/app/view/{$file}.php";
 		$html = ob_get_contents();
 		ob_end_clean();
 

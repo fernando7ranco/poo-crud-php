@@ -253,6 +253,7 @@ class Router
 						header('Content-Type: application/json; charset=utf-8');
 						return json_encode($return);
 					}
+					return $return;
 				}
 			} catch (Exception $e) {
 				http_response_code($e->getCode() ?: 200);
