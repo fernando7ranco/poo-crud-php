@@ -1,3 +1,7 @@
+function getBearerToken() {
+	return 'tttt';
+}
+
 function loading(action) {
 	if (action == 'close') {
 		$('#pageLoading').remove();

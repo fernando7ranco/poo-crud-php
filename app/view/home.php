@@ -52,7 +52,7 @@
 	$(document).ready(function() {
 		$.ajax({
 			beforeSend: function(request) {
-				request.setRequestHeader("Authorization", 'Bearer tttt');
+				request.setRequestHeader("Authorization", 'Bearer ' + getBearerToken());
 			},
 			dataType: "json",
 			url: 'imovel',

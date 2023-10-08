@@ -124,7 +124,7 @@
 
 			$.ajax({
 				beforeSend: function(request) {
-					request.setRequestHeader("Authorization", 'Bearer tttt');
+					request.setRequestHeader("Authorization", 'Bearer ' + getBearerToken());
 				},
 				dataType: "json",
 				url: '../' + idImovel,
@@ -171,7 +171,7 @@
 
 			$.ajax({
 					beforeSend: function(request) {
-						request.setRequestHeader("Authorization", 'Bearer tttt');
+						request.setRequestHeader("Authorization", 'Bearer ' + getBearerToken());
 					},
 					data: JSON.stringify(getDataFormImovel()),
 					contentType: "application/json; charset=utf-8",
@@ -191,7 +191,7 @@
 			loading();
 			$.ajax({
 					beforeSend: function(request) {
-						request.setRequestHeader("Authorization", 'Bearer tttt');
+						request.setRequestHeader("Authorization", 'Bearer ' + getBearerToken());
 					},
 					method: 'DELETE',
 					url: '../' + actionForm.url,

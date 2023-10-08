@@ -6,12 +6,13 @@ use GuzzleHttp\Exception\ClientException;
 class ImoveisTest extends TestCase
 {
 	const TOKEN_API = 'tttt';
+	const URL_SERVER = 'http://localhost';
 
 	private $http;
 
 	public function setUp(): void
 	{
-		$this->http = new GuzzleHttp\Client(['base_uri' => 'http://localhost/teste/public/imovel']);
+		$this->http = new GuzzleHttp\Client(['base_uri' => self::URL_SERVER . '/public/imovel']);
 	}
 
 	private function verificaRotaEstaBloqueadaParaTokenErrado(string $metodo, string $uri)
