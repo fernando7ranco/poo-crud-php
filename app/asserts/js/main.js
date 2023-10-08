@@ -1,5 +1,9 @@
 function getBearerToken() {
-	return 'tttt';
+	return API_BEARER_TOKEN ?? '';
+}
+
+function getUrl(uri) {
+	return URL_SERVER + '/' + uri
 }
 
 function loading(action) {
@@ -37,7 +41,7 @@ function buttonRemoveLoad(id) {
 }
 
 function formatNumberBRLToUSD(id) {
-	const value = $('input#'+ id).val();
+	const value = $('input#' + id).val();
 	if (!value) {
 		return 0;
 	}

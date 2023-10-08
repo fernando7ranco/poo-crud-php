@@ -5,14 +5,13 @@ use GuzzleHttp\Exception\ClientException;
 
 class ImoveisTest extends TestCase
 {
-	const TOKEN_API = 'tttt';
-	const URL_SERVER = 'http://localhost';
-
 	private $http;
+	private $apiToken;
 
 	public function setUp(): void
 	{
-		$this->http = new GuzzleHttp\Client(['base_uri' => self::URL_SERVER . '/public/imovel']);
+		$this->apiToken = configs('API_BEARER_TOKEN');
+		$this->http = new GuzzleHttp\Client(['base_uri' => configs('URL_SERVER') . "/public/"]);
 	}
 
 	private function verificaRotaEstaBloqueadaParaTokenErrado(string $metodo, string $uri)
@@ -24,8 +23,9 @@ class ImoveisTest extends TestCase
 				'headers' => ['Authorization' => 'Bearer ' . $tokenErrado]
 			]);
 		} catch (ClientException $e) {
-			$response = $e->getResponse();
-			$this->assertEquals(401, $response->getStatusCode());
+			$code = $e->getResponse()->getStatusCode();
+			$url = $e->getRequest()->getUri();
+			$this->assertEquals(401, $code, "metodo={$metodo}, uri ={$uri}, code ={$code}, url={$url} ");
 		}
 	}
 
@@ -39,10 +39,11 @@ class ImoveisTest extends TestCase
 	private function criarImovel(string $uri, array $data)
 	{
 		$metodo = 'POST';
+		$uri = 'imovel/' . $uri;
 		self::verificaRotaEstaBloqueadaParaTokenErrado($metodo, $uri);
 
-		$response = $this->http->request($metodo, 'imovel/' . $uri, [
-			'headers' => ['Authorization' => 'Bearer ' . self::TOKEN_API],
+		$response = $this->http->request($metodo, $uri, [
+			'headers' => ['Authorization' => 'Bearer ' . $this->apiToken],
 			GuzzleHttp\RequestOptions::JSON => $data
 		]);
 
@@ -69,7 +70,7 @@ class ImoveisTest extends TestCase
 		]);
 
 		$response = $this->http->request('PUT', 'imovel/' . $conteudoResposta['id'] . '/' . $uri, [
-			'headers' => ['Authorization' => 'Bearer ' . self::TOKEN_API],
+			'headers' => ['Authorization' => 'Bearer ' . $this->apiToken],
 			GuzzleHttp\RequestOptions::JSON => [
 				'endereco' => 'rua tal lugar tal editado',
 				'preco' => 7.338,
@@ -89,7 +90,7 @@ class ImoveisTest extends TestCase
 		]);
 
 		$response = $this->http->request('DELETE', 'imovel/' . $conteudoResposta['id'] . '/' . $uri, [
-			'headers' => ['Authorization' => 'Bearer ' . self::TOKEN_API],
+			'headers' => ['Authorization' => 'Bearer ' . $this->apiToken],
 		]);
 
 		$this->assertEquals(204, $response->getStatusCode());
@@ -100,7 +101,7 @@ class ImoveisTest extends TestCase
 		self::verificaRotaEstaBloqueadaParaTokenErrado('GET', 'imovel');
 
 		$response = $this->http->request('GET', 'imovel', [
-			'headers' => ['Authorization' => 'Bearer ' . self::TOKEN_API]
+			'headers' => ['Authorization' => 'Bearer ' . $this->apiToken]
 		]);
 
 		$this->assertEquals(200, $response->getStatusCode());
@@ -110,10 +111,18 @@ class ImoveisTest extends TestCase
 
 	public function testPegarImovel()
 	{
-		self::verificaRotaEstaBloqueadaParaTokenErrado('GET', 'imovel/1');
+		$conteudoResposta = self::criarImovel('casa', [
+			'endereco' => 'rua tal lugar tal',
+			'preco' => 67.338,
+			'status' => 'disponivel'
+		]);
 
-		$response = $this->http->request('GET', 'imovel/1', [
-			'headers' => ['Authorization' => 'Bearer ' . self::TOKEN_API]
+		$uri = 'imovel/' . $conteudoResposta['id'];
+
+		self::verificaRotaEstaBloqueadaParaTokenErrado('GET', $uri);
+
+		$response = $this->http->request('GET', $uri, [
+			'headers' => ['Authorization' => 'Bearer ' . $this->apiToken]
 		]);
 
 		$this->assertEquals(200, $response->getStatusCode());

@@ -125,7 +125,7 @@ class Router
 
 		$route = substr($path, 0, 1) !== '/' ? '/' . $path : $path;
 
-		if ($this->group){
+		if ($this->group) {
 			$route = $this->group . rtrim($route, '/');
 		}
 
@@ -201,27 +201,32 @@ class Router
 	 */
 	public function run($method, $uri)
 	{
-		$method = strtolower($method);
+		try {
+			$method = strtolower($method);
 
-		if (!isset($this->routes[$method])) {
-			return null;
-		}
-
-		foreach ($this->routes[$method] as $route => $item) {
-			if (preg_match($item['routeRegex'], $uri, $parameters, PREG_OFFSET_CAPTURE)) {
-				//array_shift($parameters);// remove primeiro lemento do array que seria o path
-				$i = 1;
-				foreach ($item['data']['args'] as &$value) {
-					$value = $parameters[$i++][0];
-				}
-
-				$parameters[0] = $item['data'];
-
-				return $this->call($item['function'], $parameters);
+			if (!isset($this->routes[$method])) {
+				throw new Exception('not found', 404);
 			}
-		}
 
-		return null;
+			foreach ($this->routes[$method] as $route => $item) {
+				if (preg_match($item['routeRegex'], $uri, $parameters, PREG_OFFSET_CAPTURE)) {
+					//array_shift($parameters);// remove primeiro lemento do array que seria o path
+					$i = 1;
+					foreach ($item['data']['args'] as &$value) {
+						$value = $parameters[$i++][0];
+					}
+
+					$parameters[0] = $item['data'];
+
+					return $this->call($item['function'], $parameters);
+				}
+			}
+
+			throw new Exception('not found', 404);
+		} catch (Exception $e) {
+			http_response_code($e->getCode() ?: 200);
+			return $e->getMessage();
+		}
 	}
 
 	/**
@@ -242,22 +247,19 @@ class Router
 
 		if (class_exists($classNamespace)) {
 
-			try {
-				$newClass = new $classNamespace;
+			$newClass = new $classNamespace;
 
-				$method = isset($array[1]) ? $array[1] : 'index';
+			$method = isset($array[1]) ? $array[1] : 'index';
 
-				if (method_exists($newClass, $method)) {
-					$return = call_user_func_array(array($newClass, $method), $parameters);
-					if (!empty($return) && is_array($return)) {
-						header('Content-Type: application/json; charset=utf-8');
-						return json_encode($return);
-					}
-					return $return;
+			if (method_exists($newClass, $method)) {
+				$return = call_user_func_array(array($newClass, $method), $parameters);
+				if (!empty($return) && is_array($return)) {
+					header('Content-Type: application/json; charset=utf-8');
+					return json_encode($return);
 				}
-			} catch (Exception $e) {
-				http_response_code($e->getCode() ?: 200);
-				return $e->getMessage();
+				return $return;
+			} else {
+				throw new Exception('not found', 404);
 			}
 
 			return null;

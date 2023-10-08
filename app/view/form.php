@@ -3,17 +3,7 @@
 
 <head>
 	<title>Imobiliária ERP</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-	<link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sticky-footer/">
-	<link href="https://getbootstrap.com/docs/4.0/examples/sticky-footer/sticky-footer.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-	<script src="http://localhost/poo-crud-php/app/asserts/js/main.js"></script>
-	<link rel="stylesheet" href="http://localhost/poo-crud-php/app/asserts/css/main.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<?php echo view('includes/headLinks'); ?>
 </head>
 
 <body>
@@ -66,6 +56,10 @@
 					</div>
 					<button type="button" id="buttonFormImovel" class="btn btn-primary"></button>
 					<button type="button" id="buttonShowDeleteImovel" class="btn btn-outline-danger float-right d-none" data-toggle="modal" data-target="#exampleModalLong">Delete</button>
+
+					<div class="alert alert-success mt-5 d-none" id="alertActionSuccess" role="alert">
+						<h2 class="text-center"></h2>
+					</div>
 				</form>
 			</div>
 		</div>
@@ -118,7 +112,9 @@
 			'method': 'POST',
 			'url': ''
 		};
+
 		const idImovel = $('input#idImovel').val();
+
 		if (idImovel > 0) {
 			$('button#buttonFormImovel').html('Editar Imóvel');
 
@@ -127,12 +123,12 @@
 					request.setRequestHeader("Authorization", 'Bearer ' + getBearerToken());
 				},
 				dataType: "json",
-				url: '../' + idImovel,
+				url: getUrl('public/imovel/' + idImovel),
 				success: function(data) {
 					const imovel = data;
 
 					actionForm.method = 'PUT';
-					actionForm.url = imovel.id + '/' + imovel.tipo;
+					actionForm.url = getUrl('public/imovel/' + imovel.id + '/' + imovel.tipo);
 
 					$('select#tipoImovel option[value="' + imovel.tipo + '"]').prop("selected", true);
 					$('select#tipoImovel').prop("disabled", true);
@@ -148,7 +144,7 @@
 					404: function() {
 						$('#alertNotFound').removeClass('d-none');
 						setTimeout(function() {
-							window.location.href = '../../home';
+							window.location.href = getUrl('public/home');
 						}, 3000);
 					}
 				}
@@ -166,7 +162,7 @@
 			buttonApplyLoad('buttonFormImovel');
 
 			if (!actionForm.url) {
-				actionForm.url = 'imovel/' + $('select#tipoImovel ').val()
+				actionForm.url = getUrl('public/imovel/' + $('select#tipoImovel ').val())
 			}
 
 			$.ajax({
@@ -177,14 +173,25 @@
 					contentType: "application/json; charset=utf-8",
 					traditional: true,
 					method: actionForm.method,
-					url: '../' + actionForm.url,
-					success: function(data) {}
+					url: actionForm.url,
+					success: function(data) {
+						if (idImovel > 0) {
+							var message = 'Imovel editado com sucesso!!';
+						} else {
+							$('form')[0].reset();
+							var message = 'Imovel criado com sucesso!!';
+						}
+						$('#alertActionSuccess').removeClass('d-none');
+						$('#alertActionSuccess h2').text(message);
+						setTimeout(function() {
+							$('#alertActionSuccess').addClass('d-none');
+						}, 3000)
+					}
 				}).fail(function() {})
 				.always(function() {
 					buttonRemoveLoad('buttonFormImovel');
 					loading('close');
 				});
-
 		});
 
 		$('#buttonDeleteImovel').click(function() {
@@ -194,9 +201,9 @@
 						request.setRequestHeader("Authorization", 'Bearer ' + getBearerToken());
 					},
 					method: 'DELETE',
-					url: '../' + actionForm.url,
+					url: actionForm.url,
 					success: function(data) {
-						window.location.href = '../../home';
+						window.location.href = getUrl('public/home');
 					}
 				})
 				.fail(function() {})

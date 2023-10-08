@@ -1,5 +1,14 @@
 <?php
 
+if (!function_exists('configs')) {
+
+	function configs(string $element)
+	{
+		$env = parse_ini_file((__DIR__ . "/../../") . "/.env");
+		return $env[$element] ?? '';
+	}
+}
+
 if (!function_exists('view')) {
 
 	function view(string $file, array $data = [])
@@ -9,11 +18,11 @@ if (!function_exists('view')) {
 		}
 
 		ob_start();
-		require __APP_ROOT__ . "/app/view/{$file}.php";
-		$html = ob_get_contents();
+		require (__DIR__ . "/../View") . "/{$file}.php";
+		$content = ob_get_contents();
 		ob_end_clean();
 
-		return $html;
+		return $content;
 	}
 }
 

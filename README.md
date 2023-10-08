@@ -21,18 +21,16 @@ localhost/public/home
 `composer test --verbose tests/ImoveisTest.php`
 
 #### Configurações
-ajustar as contantes no arquivo tests\ImoveisTest.php
+ajustar as variaveis de configurações do projeto no arquivo `.env`
 
-```php
-const TOKEN_API = 'seu token api aqui';
-const URL_SERVER = 'caminho/dominio onde esta o projeto'; # http://localhost/projeto
-```
-no arquivo app\asserts\js\main.js ajustar o token na `getBearerToken`
+```.env
+URL_SERVER= url do seu servidor
 
-```js
-function getBearerToken() {
-	return 'seu token api aqui';
-}
+API_BEARER_TOKEN=seu token de acesso a API
+
+DB_USER=seu usuario de acesso banco de dados
+DB_PASSWORD=sua senha de acesso banco de dados
+DB_NAME=nome do seu banco banco de dados
 ```
 
 ###### Para começar a usar a camada de dados, você precisa se conectar ao banco de dados (MariaDB / MySql). Para mais conexões [PDO connections manual on PHP.net](https://www.php.net/manual/pt_BR/pdo.drivers.php)

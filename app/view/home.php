@@ -3,10 +3,7 @@
 
 <head>
 	<title>Imobiliária ERP</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-	<link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sticky-footer/">
-	<link href="https://getbootstrap.com/docs/4.0/examples/sticky-footer/sticky-footer.css" rel="stylesheet">
-	<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<?php echo view('includes/headLinks'); ?>
 </head>
 
 <body>
@@ -70,14 +67,17 @@
 		function addCardImovel(imovel) {
 			const formatNumber = new Intl.NumberFormat()
 			imovel.preco = formatNumber.format(imovel.preco);
+			var urlImg = getUrl(`app/asserts/imgs/${imovel.tipo}.jpg`);
+			var urlLink = getUrl('public/imovel/edit/' + imovel.id);
 			return `
 				<div class="card">
-					<img class="card-img-top" src="http://localhost/poo-crud-php/app/asserts/imgs/${imovel.tipo}.jpg" alt="Card image cap">
+					<img class="card-img-top" src="${urlImg}" alt="Card image cap">
 					<div class="card-body">
+						<p>${imovel.tipo}</p>
 						<p>R$ ${imovel.preco}</p>
 						<p>${imovel.endereco}</p>
 						<p>${imovel.status}</p>
-						<a href="http://localhost/poo-crud-php/public/imovel/edit/${imovel.id}" target="_blank" class="card-link">Ver detalhes</a>
+						<a href="${urlLink}" target="_blank" class="card-link">Ver detalhes</a>
 					</div>
 				</div>`;
 		}
